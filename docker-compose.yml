@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+
+  app:
+    build: .
+    container_name: cloud2
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - postgres
+      - redis
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cloud
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+
+  postgres:
+    image: postgres:16
+
+    container_name: postgres-db
+
+    environment:
+      POSTGRES_DB: cloud
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+
+    container_name: redis-cache
+
+    ports:
+      - "6379:6379"
