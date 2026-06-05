@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "virtual_machine")
+
 public class VirtualMachine {
 
     @Id
