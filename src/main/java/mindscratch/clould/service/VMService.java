@@ -12,9 +12,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
 public class VMService {
-
+    @PersistenceContext
+    private EntityManager em;
     private final VMRepository repository;
 
     public VMService(VMRepository repository) {
@@ -22,22 +26,21 @@ public class VMService {
     }
 
     @Cacheable("vms")
+    
     public List<VMResponse> getAll() {
         List<VirtualMachine> vms = repository.findAll();
         System.out.println("Loading from PostgreSQL...");
-       System.out.println("================================");
-    System.out.println("VM count = " + vms.size());
+        System.out.println("================================");
+        System.out.println("VM count = " + vms.size());
+            for (VirtualMachine vm : vms) {
+                System.out.println(
+                    vm.getId() + " | " +
+                    vm.getName() + " | " +
+                    vm.getStatus()
+                );
+            }
 
-    for (VirtualMachine vm : vms) {
-        System.out.println(
-            vm.getId() + " | " +
-            vm.getName() + " | " +
-            vm.getStatus()
-        );
-    }
-
-    System.out.println("================================");
-
+            System.out.println("================================");
 
         return vms.stream()
             .map(this::mapToResponse)
