@@ -17,7 +17,7 @@ public class VMController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     public List<VMResponse> getAll() {
         return service.getAll();
     }
