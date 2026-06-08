@@ -4,16 +4,20 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "virtual_machine")
-
 public class VirtualMachine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String status;
     private Integer cpu;
     private Integer ram;
+
+    public VirtualMachine() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,9 +58,3 @@ public class VirtualMachine {
         this.ram = ram;
     }
 }
-
-// package mindscratch.clould.entity;
-
-// public class VirtualMachine {
-    
-// }
