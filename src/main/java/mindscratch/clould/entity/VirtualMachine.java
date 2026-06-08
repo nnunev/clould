@@ -15,6 +15,9 @@ public class VirtualMachine {
     private Integer cpu;
     private Integer ram;
 
+    public VirtualMachine() {
+    }
+
     public Long getId() {
         return id;
     }

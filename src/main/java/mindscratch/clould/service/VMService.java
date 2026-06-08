@@ -5,6 +5,8 @@ import mindscratch.clould.dto.VMResponse;
 import mindscratch.clould.entity.VirtualMachine;
 import mindscratch.clould.exception.VMNotFoundException;
 import mindscratch.clould.repository.VMRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,20 +20,26 @@ public class VMService {
         this.repository = repository;
     }
 
+    @Cacheable("vms")
     public List<VMResponse> getAll() {
 
         System.out.println("Loading from PostgreSQL...");
-        System.out.println("Repository count = " + repository.count());
 
-        List<VirtualMachine> vms = repository.findAll();
-
-        System.out.println("VM count = " + vms.size());
-
-        return vms.stream()
+        return repository.findAll()
+                .stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    public VMResponse getById(Long id) {
+
+        VirtualMachine vm = repository.findById(id)
+                .orElseThrow(() -> new VMNotFoundException(id));
+
+        return mapToResponse(vm);
+    }
+
+    @CacheEvict(value = "vms", allEntries = true)
     public VMResponse create(VMRequest request) {
 
         VirtualMachine vm = new VirtualMachine();
@@ -46,14 +54,7 @@ public class VMService {
         return mapToResponse(saved);
     }
 
-    public VMResponse getById(Long id) {
-
-        VirtualMachine vm = repository.findById(id)
-                .orElseThrow(() -> new VMNotFoundException(id));
-
-        return mapToResponse(vm);
-    }
-
+    @CacheEvict(value = "vms", allEntries = true)
     public VMResponse update(Long id, VMRequest request) {
 
         VirtualMachine vm = repository.findById(id)
@@ -67,7 +68,13 @@ public class VMService {
         return mapToResponse(repository.save(vm));
     }
 
+    @CacheEvict(value = "vms", allEntries = true)
     public void delete(Long id) {
+
+        if (!repository.existsById(id)) {
+            throw new VMNotFoundException(id);
+        }
+
         repository.deleteById(id);
     }
 
